@@ -153,12 +153,22 @@ const MonthlyExpenses: React.FC<Props> = ({ monthlyInputs, setMonthlyInputs, tot
   }, [setMonthlyInputs, activeTab]);
 
   const updateSingleMonth = useCallback((monthIdx: number, valStr: string) => {
-      const val = parseFloat(valStr); // Allow empty string to clear value
+      // Allow only valid numeric strings (including empty or ending with a dot)
+      if (valStr !== '' && !/^\d*\.?\d*$/.test(valStr)) {
+          return; // Don't update if input is invalid like 'abc'
+      }
+
+      const keyToUpdate = activeTab === 'dewa' ? 'dewa' 
+                        : activeTab === 'ac' ? 'ac' 
+                        : activeTab === 'service' ? 'serviceFees' 
+                        : activeTab === 'income' ? 'rentalIncome' 
+                        : 'loanPayment';
+
       setMonthlyInputs(prev => ({
           ...prev,
           [monthIdx]: {
               ...prev[monthIdx],
-              [activeTab === 'dewa' ? 'dewa' : activeTab === 'ac' ? 'ac' : activeTab === 'service' ? 'serviceFees' : activeTab === 'income' ? 'rentalIncome' : 'loanPayment']: isNaN(val) ? undefined : val
+              [keyToUpdate]: valStr 
           }
       }));
   }, [setMonthlyInputs, activeTab]);
@@ -189,12 +199,12 @@ const MonthlyExpenses: React.FC<Props> = ({ monthlyInputs, setMonthlyInputs, tot
 
     monthsToDisplay.forEach(monthIndex => {
         const month = monthlyInputs[monthIndex] || {};
-        totalIncome += month.rentalIncome || 0;
+        totalIncome += Number(month.rentalIncome) || 0;
         totalExpense += 
-            (month.loanPayment || 0) +
-            (month.dewa || 0) +
-            (month.ac || 0) +
-            (month.serviceFees || 0) +
+            (Number(month.loanPayment) || 0) +
+            (Number(month.dewa) || 0) +
+            (Number(month.ac) || 0) +
+            (Number(month.serviceFees) || 0) +
             (month.otherMaintenance || 0);
     });
 

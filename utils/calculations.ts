@@ -32,12 +32,12 @@ export const calculateSimulation = (
   for (let i = 0; i < settings.loanTenorMonths; i++) {
     const inputs = monthlyInputs[i] || {};
     
-    const dewa = inputs.dewa || 0;
-    const ac = inputs.ac || 0;
-    const serviceFees = inputs.serviceFees || 0;
+    const dewa = Number(inputs.dewa) || 0;
+    const ac = Number(inputs.ac) || 0;
+    const serviceFees = Number(inputs.serviceFees) || 0;
     const other = inputs.otherMaintenance || 0;
-    const rental = inputs.rentalIncome || 0;
-    const loanPayment = inputs.loanPayment || 0;
+    const rental = Number(inputs.rentalIncome) || 0;
+    const loanPayment = Number(inputs.loanPayment) || 0;
     const monthlyOneTimeCost = expensesByMonth[i] || 0;
 
     results.push({
@@ -64,10 +64,10 @@ export const calculateSimulation = (
 
   results.forEach(m => {
     // Note: totalRecurring does NOT include oneTimeExpenses. They are part of totalUpfront.
-    const monthlyExpenses = m.dewa + m.ac + m.serviceFees + m.otherMaintenance + (m.loanPayment || 0);
+    const monthlyExpenses = Number(m.dewa) + Number(m.ac) + Number(m.serviceFees) + m.otherMaintenance + (Number(m.loanPayment) || 0);
     totalRecurring += monthlyExpenses;
-    totalIncome += m.rentalIncome;
-    totalLoanPayments += (m.loanPayment || 0);
+    totalIncome += Number(m.rentalIncome);
+    totalLoanPayments += (Number(m.loanPayment) || 0);
   });
 
   return {
@@ -107,8 +107,8 @@ export const calculateSaleProjection = (
   let cumulativeOperatingIncome = 0;
   for (let i = 0; i < monthsHeld; i++) {
     const month = monthlyInputs[i] || {};
-    const income = month.rentalIncome || 0;
-    const expense = (month.dewa || 0) + (month.ac || 0) + (month.serviceFees || 0) + (month.otherMaintenance || 0) + (month.loanPayment || 0);
+    const income = Number(month.rentalIncome) || 0;
+    const expense = (Number(month.dewa) || 0) + (Number(month.ac) || 0) + (Number(month.serviceFees) || 0) + (month.otherMaintenance || 0) + (Number(month.loanPayment) || 0);
     cumulativeOperatingIncome += (income - expense);
   }
 

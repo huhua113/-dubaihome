@@ -226,20 +226,27 @@ const Dashboard: React.FC = () => {
 
         results.forEach((m, idx) => {
             if (detailedPortfolioResults[idx]) {
-                detailedPortfolioResults[idx].dewa += m.dewa;
-                detailedPortfolioResults[idx].ac += m.ac;
-                detailedPortfolioResults[idx].serviceFees += m.serviceFees;
+                // FIX: Cast to Number to prevent type errors with arithmetic operations on `string | number` types.
+                detailedPortfolioResults[idx].dewa = Number(detailedPortfolioResults[idx].dewa) + Number(m.dewa);
+                // FIX: Cast to Number to prevent type errors with arithmetic operations on `string | number` types.
+                detailedPortfolioResults[idx].ac = Number(detailedPortfolioResults[idx].ac) + Number(m.ac);
+                // FIX: Cast to Number to prevent type errors with arithmetic operations on `string | number` types.
+                detailedPortfolioResults[idx].serviceFees = Number(detailedPortfolioResults[idx].serviceFees) + Number(m.serviceFees);
                 detailedPortfolioResults[idx].otherMaintenance += m.otherMaintenance;
-                detailedPortfolioResults[idx].rentalIncome += m.rentalIncome;
-                detailedPortfolioResults[idx].loanPayment = (detailedPortfolioResults[idx].loanPayment || 0) + (m.loanPayment || 0);
+                // FIX: Cast to Number to prevent type errors with arithmetic operations on `string | number` types.
+                detailedPortfolioResults[idx].rentalIncome = Number(detailedPortfolioResults[idx].rentalIncome) + Number(m.rentalIncome);
+                // FIX: Cast to Number to prevent type errors with arithmetic operations on `string | number` types.
+                detailedPortfolioResults[idx].loanPayment = Number(detailedPortfolioResults[idx].loanPayment) + Number(m.loanPayment);
                 detailedPortfolioResults[idx].oneTimeExpenses += m.oneTimeExpenses;
             }
         });
     });
 
     const combinedMonthlyResultsForChart = detailedPortfolioResults.map(m => ({
-        income: m.rentalIncome,
-        expense: (m.loanPayment || 0) + m.dewa + m.ac + m.serviceFees + m.otherMaintenance + m.oneTimeExpenses,
+        // FIX: Cast to Number to ensure `income` is a number for chart data.
+        income: Number(m.rentalIncome),
+        // FIX: Cast to Number to prevent type errors with arithmetic operations on `string | number` types.
+        expense: Number(m.loanPayment) + Number(m.dewa) + Number(m.ac) + Number(m.serviceFees) + m.otherMaintenance + m.oneTimeExpenses,
     }));
 
     let aggregatedData = [];
@@ -311,8 +318,10 @@ const Dashboard: React.FC = () => {
     const fixedStartDate = new Date(2025, 7, 1); // August is month 7 (0-indexed)
 
     detailedPortfolioResults.forEach((month, index) => {
-      const income = month.rentalIncome || 0;
-      const expense = (month.loanPayment || 0) + (month.dewa || 0) + (month.ac || 0) + (month.serviceFees || 0) + (month.otherMaintenance || 0) + (month.oneTimeExpenses || 0);
+      // FIX: Cast to Number to ensure `income` is a number for calculation.
+      const income = Number(month.rentalIncome);
+      // FIX: Cast to Number to prevent type errors with arithmetic operations on `string | number` types.
+      const expense = Number(month.loanPayment) + Number(month.dewa) + Number(month.ac) + Number(month.serviceFees) + month.otherMaintenance + month.oneTimeExpenses;
       const monthlyNet = income - expense;
       cumulativeNet += monthlyNet;
 

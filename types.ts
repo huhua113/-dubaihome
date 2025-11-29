@@ -23,12 +23,12 @@ export interface OneTimeExpense {
 
 export interface MonthlyData {
   monthIndex: number; // 0 to loanTenorMonths
-  dewa: number;
-  ac: number;
-  serviceFees: number; // HOA/Property Management
+  dewa: number | string;
+  ac: number | string;
+  serviceFees: number | string; // HOA/Property Management
   otherMaintenance: number;
-  rentalIncome: number;
-  loanPayment?: number; // Manual monthly loan payment input
+  rentalIncome: number | string;
+  loanPayment?: number | string; // Manual monthly loan payment input
   oneTimeExpenses: number;
 }
 
