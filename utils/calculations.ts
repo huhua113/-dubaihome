@@ -13,11 +13,15 @@ export const calculateSimulation = (
   const expensesByMonth: Record<number, number> = {};
   if (expenses) {
       expenses.forEach(expense => {
-          if (!expense.date) return; // Skip if date is missing
-          const expenseDate = new Date(expense.date);
-          if (isNaN(expenseDate.getTime())) return; // Skip if date is invalid
+          let monthDiff = 0; // Default to the first month (index 0)
 
-          const monthDiff = (expenseDate.getFullYear() - fixedStartDate.getFullYear()) * 12 + (expenseDate.getMonth() - fixedStartDate.getMonth());
+          if (expense.date) {
+            const expenseDate = new Date(expense.date);
+            // If date is valid, calculate the difference
+            if (!isNaN(expenseDate.getTime())) {
+              monthDiff = (expenseDate.getFullYear() - fixedStartDate.getFullYear()) * 12 + (expenseDate.getMonth() - fixedStartDate.getMonth());
+            }
+          }
           
           if (monthDiff >= 0 && monthDiff < settings.loanTenorMonths) {
               expensesByMonth[monthDiff] = (expensesByMonth[monthDiff] || 0) + expense.amount;

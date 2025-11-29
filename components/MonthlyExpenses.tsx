@@ -193,23 +193,30 @@ const MonthlyExpenses: React.FC<Props> = ({ monthlyInputs, setMonthlyInputs, tot
     });
   }, [selectedYear, totalMonths]);
 
-  const yearlyTotals = useMemo(() => {
-    let totalIncome = 0;
-    let totalExpense = 0;
-
-    monthsToDisplay.forEach(monthIndex => {
-        const month = monthlyInputs[monthIndex] || {};
-        totalIncome += Number(month.rentalIncome) || 0;
-        totalExpense += 
-            (Number(month.loanPayment) || 0) +
-            (Number(month.dewa) || 0) +
-            (Number(month.ac) || 0) +
-            (Number(month.serviceFees) || 0) +
-            (month.otherMaintenance || 0);
-    });
-
-    return { totalIncome, totalExpense };
-  }, [monthsToDisplay, monthlyInputs]);
+  const activeTabTotal = useMemo(() => {
+    return monthsToDisplay.reduce((sum, monthIndex) => {
+      const month = monthlyInputs[monthIndex] || {};
+      let value = 0;
+      switch (activeTab) {
+        case 'payment':
+          value = Number(month.loanPayment) || 0;
+          break;
+        case 'income':
+          value = Number(month.rentalIncome) || 0;
+          break;
+        case 'service':
+          value = Number(month.serviceFees) || 0;
+          break;
+        case 'dewa':
+          value = Number(month.dewa) || 0;
+          break;
+        case 'ac':
+          value = Number(month.ac) || 0;
+          break;
+      }
+      return sum + value;
+    }, 0);
+  }, [monthsToDisplay, monthlyInputs, activeTab]);
 
   const getTabLabel = (t: TabType) => ({
     'payment': '还款',
@@ -313,20 +320,34 @@ const MonthlyExpenses: React.FC<Props> = ({ monthlyInputs, setMonthlyInputs, tot
               </select>
           </div>
 
-          <div className="p-3 border-b border-slate-100 grid grid-cols-2 gap-3 bg-white">
-            <div className="p-3 rounded-lg bg-red-50 border border-red-100">
-                <div className="flex items-center justify-between">
-                    <span className="text-xs text-red-700 font-semibold uppercase">{selectedYear === 'all' ? '总支出' : '年度总支出'}</span>
-                    <TrendingDown className="w-4 h-4 text-red-500" />
+          <div className="p-3 border-b border-slate-100 bg-white">
+            <div className={`p-3 rounded-lg ${
+                activeTab === 'income' 
+                ? 'bg-green-50 border border-green-100' 
+                : 'bg-blue-50 border border-blue-100'
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <span className={`text-xs font-semibold uppercase ${
+                    activeTab === 'income' 
+                    ? 'text-green-700' 
+                    : 'text-blue-700'
+                  }`}
+                >
+                  {getTabLabel(activeTab)} ({selectedYear === 'all' ? '总计' : '年度总计'})
+                </span>
+                <div className={`${activeTab === 'income' ? 'text-green-500' : 'text-blue-500'}`}>
+                  {getTabIcon(activeTab)}
                 </div>
-                <div className="text-xl font-bold text-red-600 mt-1">{formatCurrency(yearlyTotals.totalExpense)}</div>
-            </div>
-            <div className="p-3 rounded-lg bg-green-50 border border-green-100">
-                <div className="flex items-center justify-between">
-                    <span className="text-xs text-green-700 font-semibold uppercase">{selectedYear === 'all' ? '总收入' : '年度总收入'}</span>
-                    <TrendingUp className="w-4 h-4 text-green-500" />
-                </div>
-                <div className="text-xl font-bold text-green-600 mt-1">{formatCurrency(yearlyTotals.totalIncome)}</div>
+              </div>
+              <div className={`text-xl font-bold mt-1 ${
+                  activeTab === 'income' 
+                  ? 'text-green-600' 
+                  : 'text-blue-600'
+                }`}
+              >
+                {formatCurrency(activeTabTotal)}
+              </div>
             </div>
           </div>
 
