@@ -337,7 +337,6 @@ const MonthlyExpenses: React.FC<Props> = ({ monthlyInputs, setMonthlyInputs, tot
                                   <input 
                                       type="tel"
                                       inputMode="decimal"
-                                      placeholder="0"
                                       className={`w-full text-left bg-transparent border-b border-transparent focus:border-brand-gold focus:outline-none focus:bg-white px-2 py-1 rounded
                                           ${activeTab === 'income' ? 'text-green-600' : 'text-brand-slate-dark'}
                                           font-medium
