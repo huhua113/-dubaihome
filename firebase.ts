@@ -1,18 +1,23 @@
 import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
 
-// TODO: 将此处替换为您的 Firebase 项目配置
-// 注意：这是一个前端应用，请确保您的 Firestore 安全规则已正确配置。
+// 从环境变量中读取 Firebase 配置，以提高安全性并解决 Netlify 部署问题。
+// 您需要在 Netlify 的项目设置中配置这些环境变量。
 const firebaseConfig = {
-  apiKey: "AIzaSyAFUC-Vc-vBJITVnh2oM369ONG71RSGyXE",
-  authDomain: "kolckm-bca2f.firebaseapp.com",
-  databaseURL: "https://kolckm-bca2f-default-rtdb.firebaseio.com",
-  projectId: "kolckm-bca2f",
-  storageBucket: "kolckm-bca2f.firebasestorage.app",
-  messagingSenderId: "840830636040",
-  appId: "1:840830636040:web:4e6c747abd3dc00fd401bd",
-  measurementId: "G-N96R7EPB06"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
+
+// 检查关键配置是否存在，如果不存在则提示错误
+if (!firebaseConfig.apiKey || !firebaseConfig.projectId) {
+  throw new Error("Firebase configuration is missing. Please set up your environment variables in Netlify.");
+}
 
 // 初始化 Firebase
 const app = initializeApp(firebaseConfig);
