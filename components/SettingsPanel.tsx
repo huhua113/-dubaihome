@@ -1,0 +1,217 @@
+import React, { useEffect } from 'react';
+import { Property, PropertySettings } from '../types';
+import { Calculator, Percent, ShieldCheck, Banknote, X } from 'lucide-react';
+
+interface Props {
+  activeProperty: Property;
+  onPropertyChange: (updatedProperty: Property) => void;
+  onClose: () => void;
+}
+
+const SettingsPanel: React.FC<Props> = ({ 
+    activeProperty, 
+    onPropertyChange, 
+    onClose 
+}) => {
+
+  const { settings } = activeProperty;
+
+  const handleChange = (field: keyof PropertySettings, value: string) => {
+    if (field === 'address') {
+        onPropertyChange({ ...activeProperty, settings: { ...settings, [field]: value }});
+    } else {
+        const num = parseFloat(value) || 0;
+        onPropertyChange({ ...activeProperty, settings: { ...settings, [field]: num }});
+    }
+  };
+
+  useEffect(() => {
+    const calculatedLoan = settings.propertyValue * (1 - settings.downPaymentPercent / 100);
+    if (Math.abs(calculatedLoan - settings.loanAmount) > 1) {
+        onPropertyChange({ ...activeProperty, settings: { ...settings, loanAmount: calculatedLoan }});
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [settings.propertyValue, settings.downPaymentPercent]);
+
+  return (
+    <div className="bg-white h-full flex flex-col">
+      <div className="flex justify-between items-center p-6 border-b border-slate-200 flex-shrink-0">
+        <h2 className="text-xl font-extrabold text-brand-slate">
+          房产设置
+        </h2>
+        <button onClick={onClose} className="p-1 text-slate-500 hover:text-slate-800">
+            <X className="w-6 h-6" />
+        </button>
+      </div>
+
+      <div className="flex-1 overflow-y-auto custom-scrollbar p-6">
+          <div className="space-y-4">
+            <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2">
+                <Calculator className="w-4 h-4 text-brand-gold" />
+                房产详情
+            </h3>
+            <div className="form-control">
+              <label className="label text-xs font-semibold text-slate-500 uppercase">地址</label>
+              <input 
+                  type="text" 
+                  className="w-full pl-3 pr-3 py-2 border rounded-md focus:ring-2 focus:ring-brand-gold focus:outline-none"
+                  value={settings.address}
+                  onChange={(e) => handleChange('address', e.target.value)}
+                />
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+                 <div>
+                    <label className="label text-xs font-semibold text-slate-500 uppercase">面积 (平米)</label>
+                    <input 
+                        type="number" 
+                        className="w-full pl-3 pr-3 py-2 border rounded-md focus:ring-2 focus:ring-brand-gold focus:outline-none"
+                        value={settings.areaSqm}
+                        onChange={(e) => handleChange('areaSqm', e.target.value)}
+                    />
+                </div>
+                 <div>
+                    <label className="label text-xs font-semibold text-slate-500 uppercase">卧室数量</label>
+                    <input 
+                        type="number" 
+                        className="w-full pl-3 pr-3 py-2 border rounded-md focus:ring-2 focus:ring-brand-gold focus:outline-none"
+                        value={settings.bedrooms}
+                        onChange={(e) => handleChange('bedrooms', e.target.value)}
+                    />
+                </div>
+            </div>
+            <div className="form-control">
+              <label className="label text-xs font-semibold text-slate-500 uppercase">房产总价 (AED)</label>
+              <input 
+                  type="number" 
+                  className="w-full pl-3 pr-3 py-2 border rounded-md focus:ring-2 focus:ring-brand-gold focus:outline-none"
+                  value={settings.propertyValue}
+                  onChange={(e) => handleChange('propertyValue', e.target.value)}
+                />
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="label text-xs font-semibold text-slate-500 uppercase">首付比例 %</label>
+                <div className="relative flex items-center">
+                  <input 
+                    type="number" 
+                    className="w-full pl-3 pr-8 py-2 border rounded-md focus:ring-2 focus:ring-brand-gold focus:outline-none"
+                    value={settings.downPaymentPercent}
+                    onChange={(e) => handleChange('downPaymentPercent', e.target.value)}
+                  />
+                  <Percent className="w-3 h-3 absolute right-3 text-gray-400" />
+                </div>
+              </div>
+              <div>
+                <label className="label text-xs font-semibold text-slate-500 uppercase">金额</label>
+                <div className="py-2 px-3 bg-slate-100 text-slate-600 rounded-md text-sm truncate">
+                   {Math.round(settings.propertyValue * settings.downPaymentPercent / 100).toLocaleString()}
+                </div>
+              </div>
+            </div>
+            <div>
+                <label className="label text-xs font-semibold text-slate-500 uppercase">土地局注册费 (%)</label>
+                <div className="relative flex items-center">
+                    <input 
+                    type="number" 
+                    className="w-full pl-3 pr-8 py-2 border rounded-md focus:ring-2 focus:ring-brand-gold focus:outline-none"
+                    value={settings.landDepartmentFeePercent}
+                    onChange={(e) => handleChange('landDepartmentFeePercent', e.target.value)}
+                    />
+                    <Percent className="w-3 h-3 absolute right-3 text-gray-400" />
+                </div>
+            </div>
+            <div className="border-t border-slate-100 my-4"></div>
+            <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2">
+                <Banknote className="w-4 h-4 text-brand-blue" />
+                贷款设置
+            </h3>
+            <div>
+                <label className="label text-xs font-semibold text-slate-500 uppercase">贷款金额 (AED)</label>
+                <input 
+                  type="number" 
+                  className="w-full pl-3 pr-3 py-2 border rounded-md bg-slate-100 text-slate-500"
+                  value={Math.round(settings.loanAmount)}
+                  readOnly
+                />
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+                <div>
+                    <label className="label text-xs font-semibold text-slate-500 uppercase">贷款期限 (月)</label>
+                    <input 
+                        type="number" 
+                        className="w-full pl-3 pr-3 py-2 border rounded-md focus:ring-2 focus:ring-brand-gold focus:outline-none"
+                        value={settings.loanTenorMonths}
+                        onChange={(e) => handleChange('loanTenorMonths', e.target.value)}
+                    />
+                </div>
+                 <div className="flex items-end pb-2 text-xs text-gray-400">
+                    {(settings.loanTenorMonths / 12).toFixed(1)} 年
+                </div>
+            </div>
+            <div className="border-t border-slate-100 my-4"></div>
+            <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-green-600" />
+                利率与保险 (参考)
+            </h3>
+            <p className="text-xs text-slate-400 -mt-2 mb-2">
+                注意：当前计算不使用利率。请在“周期性费用”中手动输入每月还款额。
+            </p>
+
+            <div className="grid grid-cols-2 gap-2">
+                <div>
+                    <label className="label text-xs font-semibold text-slate-500 uppercase">固定利率</label>
+                    <div className="relative flex items-center">
+                        <input 
+                            type="number" 
+                            className="w-full pl-3 pr-8 py-2 border rounded-md focus:ring-2 focus:ring-brand-gold focus:outline-none"
+                            value={settings.fixedRatePercent}
+                            onChange={(e) => handleChange('fixedRatePercent', e.target.value)}
+                        />
+                        <Percent className="w-3 h-3 absolute right-3 text-gray-400" />
+                    </div>
+                </div>
+                <div>
+                    <label className="label text-xs font-semibold text-slate-500 uppercase">固定时长 (月)</label>
+                    <input 
+                        type="number" 
+                        className="w-full pl-3 pr-3 py-2 border rounded-md focus:ring-2 focus:ring-brand-gold focus:outline-none"
+                        value={settings.fixedRateMonths}
+                        onChange={(e) => handleChange('fixedRateMonths', e.target.value)}
+                    />
+                </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2">
+                <div>
+                    <label className="label text-xs font-semibold text-slate-500 uppercase">后续浮动利率</label>
+                    <div className="relative flex items-center">
+                        <input 
+                            type="number" 
+                            className="w-full pl-3 pr-8 py-2 border rounded-md focus:ring-2 focus:ring-brand-gold focus:outline-none"
+                            value={settings.floatingRatePercent}
+                            onChange={(e) => handleChange('floatingRatePercent', e.target.value)}
+                        />
+                        <Percent className="w-3 h-3 absolute right-3 text-gray-400" />
+                    </div>
+                </div>
+                <div>
+                    <label className="label text-xs font-semibold text-slate-500 uppercase">保险比例</label>
+                    <div className="relative flex items-center">
+                        <input 
+                            type="number" 
+                            className="w-full pl-3 pr-8 py-2 border rounded-md focus:ring-2 focus:ring-brand-gold focus:outline-none"
+                            value={settings.insurancePercent}
+                            onChange={(e) => handleChange('insurancePercent', e.target.value)}
+                        />
+                        <Percent className="w-3 h-3 absolute right-3 text-gray-400" />
+                    </div>
+                </div>
+            </div>
+             <p className="text-xs text-slate-400 mt-4">每月还款金额请在“周期性费用”选项卡中手动输入。</p>
+          </div>
+      </div>
+    </div>
+  );
+};
+
+export default SettingsPanel;
