@@ -82,8 +82,8 @@ const Dashboard: React.FC = () => {
 
   const activeProperty = useMemo(() => properties.find(p => p.id === activePropertyId), [properties, activePropertyId]);
   
-  const [estimatedSalePrice, setEstimatedSalePrice] = useState(activeProperty?.settings.propertyValue || 0);
-  const [monthsHeld, setMonthsHeld] = useState(60);
+  const [estimatedSalePrice, setEstimatedSalePrice] = useState('0');
+  const [monthsHeld, setMonthsHeld] = useState('60');
 
   // Firestore real-time listener
   useEffect(() => {
@@ -109,8 +109,8 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     if (activeProperty) {
-        setEstimatedSalePrice(activeProperty.settings.propertyValue);
-        setMonthsHeld(60);
+        setEstimatedSalePrice(String(activeProperty.settings.propertyValue));
+        setMonthsHeld('60');
     }
   }, [activeProperty]);
   
@@ -281,8 +281,8 @@ const Dashboard: React.FC = () => {
         activeProperty.settings,
         activeProperty.oneTimeExpenses,
         activeProperty.monthlyInputs,
-        estimatedSalePrice,
-        monthsHeld
+        parseFloat(estimatedSalePrice) || 0,
+        parseInt(monthsHeld) || 0
     );
   }, [activeProperty, estimatedSalePrice, monthsHeld]);
   
@@ -472,7 +472,7 @@ const Dashboard: React.FC = () => {
                         type="number"
                         className="w-full pl-3 pr-3 py-2 border rounded-md focus:ring-2 focus:ring-brand-gold focus:outline-none"
                         value={estimatedSalePrice}
-                        onChange={(e) => setEstimatedSalePrice(parseFloat(e.target.value) || 0)}
+                        onChange={(e) => setEstimatedSalePrice(e.target.value)}
                     />
                 </div>
                 <div>
@@ -481,7 +481,7 @@ const Dashboard: React.FC = () => {
                         type="number"
                         className="w-full pl-3 pr-3 py-2 border rounded-md focus:ring-2 focus:ring-brand-gold focus:outline-none"
                         value={monthsHeld}
-                        onChange={(e) => setMonthsHeld(parseInt(e.target.value) || 0)}
+                        onChange={(e) => setMonthsHeld(e.target.value)}
                     />
                 </div>
             </div>

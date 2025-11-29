@@ -23,32 +23,62 @@ const BulkEditModal: React.FC<{
   onApply: (start: number, end: number, value: number) => void;
   totalMonths: number;
   tabLabel: string;
-}> = ({ isOpen, onClose, onApply, totalMonths, tabLabel }) => {
-    const [startMonth, setStartMonth] = useState('1');
-    const [endMonth, setEndMonth] = useState(totalMonths.toString());
+  yearOptions: string[];
+  fixedStartDate: Date;
+}> = ({ isOpen, onClose, onApply, totalMonths, tabLabel, yearOptions, fixedStartDate }) => {
+    
+    const startYearOfLoan = fixedStartDate.getFullYear();
+    const startMonthOfLoan = fixedStartDate.getMonth() + 1;
+    
+    const endDate = new Date(fixedStartDate);
+    endDate.setMonth(endDate.getMonth() + totalMonths - 1);
+    const endYearOfLoan = endDate.getFullYear();
+    const endMonthOfLoan = endDate.getMonth() + 1;
+
+    const [startYear, setStartYear] = useState(startYearOfLoan.toString());
+    const [startMonth, setStartMonth] = useState(startMonthOfLoan.toString());
+    const [endYear, setEndYear] = useState(endYearOfLoan.toString());
+    const [endMonth, setEndMonth] = useState(endMonthOfLoan.toString());
     const [value, setValue] = useState('');
 
     if (!isOpen) return null;
     
-    const getDateLabel = (monthNumberStr: string) => {
-        const monthIndex = parseInt(monthNumberStr) - 1;
-        if (isNaN(monthIndex) || monthIndex < 0 || monthIndex >= totalMonths) return <>&nbsp;</>;
-        const date = new Date(fixedStartDate);
-        date.setMonth(date.getMonth() + monthIndex);
-        return `${date.getFullYear()}年${date.getMonth() + 1}月`;
+    const handleApply = () => {
+        const sYear = parseInt(startYear);
+        const sMonth = parseInt(startMonth);
+        const eYear = parseInt(endYear);
+        const eMonth = parseInt(endMonth);
+        const val = parseFloat(value);
+
+        if (isNaN(sYear) || isNaN(sMonth) || isNaN(eYear) || isNaN(eMonth) || isNaN(val)) {
+            alert('无效输入。请检查您的年份、月份和数值。');
+            return;
+        }
+
+        if (sYear > eYear || (sYear === eYear && sMonth > eMonth)) {
+            alert('开始日期不能晚于结束日期。');
+            return;
+        }
+    
+        const baseYear = fixedStartDate.getFullYear();
+        const baseMonth = fixedStartDate.getMonth(); // 0-indexed
+
+        const startMonthIndex = (sYear - baseYear) * 12 + (sMonth - 1 - baseMonth);
+        const endMonthIndex = (eYear - baseYear) * 12 + (eMonth - 1 - baseMonth);
+        
+        const start = startMonthIndex + 1;
+        const end = endMonthIndex + 1;
+
+        if (start < 1 || end > totalMonths || start > end) {
+            alert('选择的日期范围无效或超出了贷款期限。');
+            return;
+        }
+
+        onApply(start, end, val);
+        onClose();
     };
 
-    const handleApply = () => {
-        const start = parseInt(startMonth);
-        const end = parseInt(endMonth);
-        const val = parseFloat(value);
-        if (!isNaN(start) && !isNaN(end) && !isNaN(val) && start >= 1 && end <= totalMonths && start <= end) {
-            onApply(start, end, val);
-            onClose();
-        } else {
-            alert('无效输入。请检查您的月份范围和数值。');
-        }
-    };
+    const monthOptions = Array.from({length: 12}, (_, i) => i + 1);
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
@@ -59,20 +89,30 @@ const BulkEditModal: React.FC<{
                 </div>
                 <div className="space-y-4">
                     <div>
-                        <label className="text-xs font-semibold text-slate-500 uppercase">月份范围</label>
-                        <div className="flex items-center gap-2">
-                            <input type="number" placeholder="开始" value={startMonth} onChange={e => setStartMonth(e.target.value)} className="w-full border rounded-md px-3 py-2 text-sm focus:ring-1 focus:ring-brand-gold focus:outline-none" />
-                            <span className="text-slate-500">至</span>
-                            <input type="number" placeholder="结束" value={endMonth} onChange={e => setEndMonth(e.target.value)} className="w-full border rounded-md px-3 py-2 text-sm focus:ring-1 focus:ring-brand-gold focus:outline-none" />
+                        <label className="text-xs font-semibold text-slate-500 uppercase">开始日期</label>
+                        <div className="flex items-center gap-2 mt-1">
+                            <select value={startYear} onChange={e => setStartYear(e.target.value)} className="w-full border rounded-md px-3 py-2 text-sm focus:ring-1 focus:ring-brand-gold focus:outline-none bg-white">
+                                {yearOptions.map(y => <option key={`start-${y}`} value={y}>{y}年</option>)}
+                            </select>
+                            <select value={startMonth} onChange={e => setStartMonth(e.target.value)} className="w-full border rounded-md px-3 py-2 text-sm focus:ring-1 focus:ring-brand-gold focus:outline-none bg-white">
+                                {monthOptions.map(m => <option key={`start-m-${m}`} value={m}>{m}月</option>)}
+                            </select>
                         </div>
-                        <div className="flex justify-between items-center mt-1 px-1">
-                            <span className="text-xs text-slate-400">{getDateLabel(startMonth)}</span>
-                            <span className="text-xs text-slate-400">{getDateLabel(endMonth)}</span>
+                    </div>
+                     <div>
+                        <label className="text-xs font-semibold text-slate-500 uppercase">结束日期</label>
+                        <div className="flex items-center gap-2 mt-1">
+                            <select value={endYear} onChange={e => setEndYear(e.target.value)} className="w-full border rounded-md px-3 py-2 text-sm focus:ring-1 focus:ring-brand-gold focus:outline-none bg-white">
+                                {yearOptions.map(y => <option key={`end-${y}`} value={y}>{y}年</option>)}
+                            </select>
+                            <select value={endMonth} onChange={e => setEndMonth(e.target.value)} className="w-full border rounded-md px-3 py-2 text-sm focus:ring-1 focus:ring-brand-gold focus:outline-none bg-white">
+                                {monthOptions.map(m => <option key={`end-m-${m}`} value={m}>{m}月</option>)}
+                            </select>
                         </div>
                     </div>
                     <div>
                         <label className="text-xs font-semibold text-slate-500 uppercase">金额 (AED)</label>
-                        <input type="number" placeholder="输入月度金额" value={value} onChange={e => setValue(e.target.value)} className="w-full border rounded-md px-3 py-2 text-sm focus:ring-1 focus:ring-brand-gold focus:outline-none" />
+                        <input type="number" placeholder="输入月度金额" value={value} onChange={e => setValue(e.target.value)} className="w-full border rounded-md px-3 py-2 text-sm focus:ring-1 focus:ring-brand-gold focus:outline-none mt-1" />
                     </div>
                 </div>
                 <div className="mt-6 flex justify-end gap-3">
@@ -119,7 +159,8 @@ const MonthlyExpenses: React.FC<Props> = ({ monthlyInputs, setMonthlyInputs, tot
   const yearOptions = useMemo(() => {
     const startYear = fixedStartDate.getFullYear();
     const numYears = Math.ceil(totalMonths / 12);
-    const years = Array.from({ length: numYears }, (_, i) => startYear + i);
+    // Ensure numYears is at least 1, even if totalMonths is 0
+    const years = Array.from({ length: Math.max(1, numYears) }, (_, i) => startYear + i);
     return ['all', ...years.map(String)];
   }, [totalMonths]);
 
@@ -170,16 +211,21 @@ const MonthlyExpenses: React.FC<Props> = ({ monthlyInputs, setMonthlyInputs, tot
   }[t]);
 
   const getValueForMonth = (monthIdx: number) => {
-      const m = monthlyInputs[monthIdx];
-      if (!m) return '';
-      switch(activeTab) {
-        case 'dewa': return m.dewa || '';
-        case 'ac': return m.ac || '';
-        case 'service': return m.serviceFees || '';
-        case 'income': return m.rentalIncome || '';
-        case 'payment': return m.loanPayment || '';
-      }
+    const m = monthlyInputs[monthIdx];
+    if (!m) return '';
+    let value;
+    switch (activeTab) {
+      case 'dewa': value = m.dewa; break;
+      case 'ac': value = m.ac; break;
+      case 'service': value = m.serviceFees; break;
+      case 'income': value = m.rentalIncome; break;
+      case 'payment': value = m.loanPayment; break;
+      default: return '';
+    }
+    if (value === undefined || value === null) {
       return '';
+    }
+    return String(value);
   };
 
 
@@ -197,6 +243,8 @@ const MonthlyExpenses: React.FC<Props> = ({ monthlyInputs, setMonthlyInputs, tot
         onApply={handleBulkApply}
         totalMonths={totalMonths}
         tabLabel={getTabLabel(activeTab)}
+        yearOptions={yearOptions.filter(y => y !== 'all')}
+        fixedStartDate={fixedStartDate}
       />
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 flex flex-col h-full overflow-hidden">
           <div className="p-4 border-b border-slate-100 flex justify-between items-center">
