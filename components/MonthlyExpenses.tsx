@@ -215,12 +215,12 @@ const MonthlyExpenses: React.FC<Props> = ({ monthlyInputs, setMonthlyInputs, tot
              )}
           </div>
 
-          <div className="flex border-b border-slate-100 overflow-x-auto">
+          <div className="flex border-b border-slate-100">
               {(['payment', 'income', 'service', 'dewa', 'ac'] as TabType[]).map(tab => (
                   <button
                       key={tab}
                       onClick={() => setActiveTab(tab)}
-                      className={`flex-1 flex items-center justify-center gap-2 px-3 py-3 text-sm font-medium text-center transition-colors min-w-max
+                      className={`flex-1 flex items-center justify-center gap-1.5 px-2 py-3 text-sm font-medium text-center transition-colors
                           ${activeTab === tab 
                               ? (tab === 'income' ? 'text-green-600 border-b-2 border-green-600 bg-green-50/50' : 'text-brand-blue border-b-2 border-brand-blue bg-blue-50/50') 
                               : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'

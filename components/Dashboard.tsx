@@ -268,7 +268,7 @@ const Dashboard: React.FC = () => {
         aggregatedData = aggregatedData.slice(0, 60);
     }
     
-    const calculatedTotalExpense = portfolioTotals.recurring + portfolioTotals.upfront - totalDownPayment;
+    const calculatedTotalExpense = portfolioTotals.recurring + portfolioTotals.upfront;
 
     return { totals: portfolioTotals, chartData: aggregatedData, totalExpenseForCard: calculatedTotalExpense, totalDownPayment, detailedPortfolioResults };
   }, [properties, chartRange]);
@@ -554,7 +554,7 @@ const Dashboard: React.FC = () => {
                             </div>
                             <div className="mt-2">
                                 <div className="text-xl md:text-2xl font-extrabold text-brand-slate">{formatCurrency(totalExpenseForCard)}</div>
-                                <div className="text-xs text-slate-500 mt-1 hidden sm:block">已排除首付: {formatCurrency(totalDownPayment)}</div>
+                                <div className="text-xs text-slate-500 mt-1 hidden sm:block">包含首付及所有费用</div>
                             </div>
                         </div>
                         <div className="bg-gradient-to-br from-green-100 to-white p-4 rounded-xl border border-green-200 shadow-sm flex flex-col justify-between">

@@ -94,7 +94,16 @@ const UpfrontExpenses: React.FC<Props> = ({ expenses = [], setExpenses, downPaym
       
       {/* Add Expense Form */}
        <div className="p-4 border-b border-slate-100">
-        <div className="grid grid-cols-1 sm:grid-cols-[1fr,auto,auto,auto] gap-2 items-center">
+        <div className="flex flex-col gap-3">
+            <div className="relative">
+                <input 
+                    type="date" 
+                    className="w-full px-3 py-2 text-sm border rounded-md focus:outline-none focus:ring-1 focus:ring-brand-blue"
+                    value={newExpenseDate}
+                    onChange={(e) => setNewExpenseDate(e.target.value)}
+                />
+                <Calendar className="w-4 h-4 absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+            </div>
             <input 
                 type="text" 
                 placeholder="名称 (例如 粉刷)" 
@@ -102,28 +111,20 @@ const UpfrontExpenses: React.FC<Props> = ({ expenses = [], setExpenses, downPaym
                 value={newExpenseName}
                 onChange={(e) => setNewExpenseName(e.target.value)}
             />
-             <div className="relative">
-                <input 
-                    type="date" 
-                    className="w-full sm:w-36 px-3 py-2 text-sm border rounded-md focus:outline-none focus:ring-1 focus:ring-brand-blue"
-                    value={newExpenseDate}
-                    onChange={(e) => setNewExpenseDate(e.target.value)}
-                />
-                <Calendar className="w-4 h-4 absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-            </div>
             <input 
                 type="number" 
                 placeholder="金额" 
-                className="w-full sm:w-28 px-3 py-2 text-sm border rounded-md focus:outline-none focus:ring-1 focus:ring-brand-blue"
+                className="w-full px-3 py-2 text-sm border rounded-md focus:outline-none focus:ring-1 focus:ring-brand-blue"
                 value={newExpenseAmount}
                 onChange={(e) => setNewExpenseAmount(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
             />
             <button 
                 onClick={handleAdd}
-                className="p-2 bg-brand-slate text-white rounded-md hover:bg-slate-700 transition-colors flex-shrink-0 flex items-center justify-center"
+                className="w-full p-2 bg-brand-slate text-white rounded-md hover:bg-slate-700 transition-colors flex items-center justify-center gap-2 font-semibold"
                 aria-label="Add Expense"
             >
+                <span>添加新费用</span>
                 <Plus className="w-5 h-5" />
             </button>
         </div>
