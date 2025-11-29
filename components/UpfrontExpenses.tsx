@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { OneTimeExpense } from '../types';
-import { Plus, Trash2, Paintbrush, Armchair, Wrench, Refrigerator, Wallet, FileText } from 'lucide-react';
+import { Plus, Trash2, Paintbrush, Armchair, Wrench, Refrigerator, Wallet, FileText, Calendar } from 'lucide-react';
 
 interface Props {
   expenses: OneTimeExpense[];
@@ -16,13 +16,14 @@ const POST_PURCHASE_SUGGESTIONS = [
   { name: '家电', icon: <Refrigerator className="w-4 h-4" /> },
 ];
 
-const UpfrontExpenses: React.FC<Props> = ({ expenses, setExpenses, downPaymentAmount, landDepartmentFeeAmount }) => {
+const UpfrontExpenses: React.FC<Props> = ({ expenses = [], setExpenses, downPaymentAmount, landDepartmentFeeAmount }) => {
   const [newExpenseName, setNewExpenseName] = useState('');
   const [newExpenseAmount, setNewExpenseAmount] = useState('');
+  const [newExpenseDate, setNewExpenseDate] = useState(new Date().toISOString().split('T')[0]);
   const [activeTab, setActiveTab] = useState<'pre' | 'post'>('pre');
 
   const handleAdd = () => {
-    if (!newExpenseName || !newExpenseAmount) return;
+    if (!newExpenseName || !newExpenseAmount || !newExpenseDate) return;
     const newId = Math.random().toString(36).substr(2, 9);
     setExpenses([
       ...expenses,
@@ -31,6 +32,7 @@ const UpfrontExpenses: React.FC<Props> = ({ expenses, setExpenses, downPaymentAm
         name: newExpenseName,
         amount: parseFloat(newExpenseAmount),
         category: activeTab,
+        date: newExpenseDate,
       },
     ]);
     setNewExpenseName('');
@@ -92,25 +94,34 @@ const UpfrontExpenses: React.FC<Props> = ({ expenses, setExpenses, downPaymentAm
       
       {/* Add Expense Form */}
        <div className="p-4 border-b border-slate-100">
-        <div className="flex flex-col sm:flex-row gap-2">
+        <div className="grid grid-cols-1 sm:grid-cols-[1fr,auto,auto,auto] gap-2 items-center">
             <input 
                 type="text" 
                 placeholder="名称 (例如 粉刷)" 
-                className="flex-1 px-3 py-2 text-sm border rounded-md focus:outline-none focus:ring-1 focus:ring-brand-blue"
+                className="w-full px-3 py-2 text-sm border rounded-md focus:outline-none focus:ring-1 focus:ring-brand-blue"
                 value={newExpenseName}
                 onChange={(e) => setNewExpenseName(e.target.value)}
             />
+             <div className="relative">
+                <input 
+                    type="date" 
+                    className="w-full sm:w-36 px-3 py-2 text-sm border rounded-md focus:outline-none focus:ring-1 focus:ring-brand-blue"
+                    value={newExpenseDate}
+                    onChange={(e) => setNewExpenseDate(e.target.value)}
+                />
+                <Calendar className="w-4 h-4 absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+            </div>
             <input 
                 type="number" 
                 placeholder="金额" 
-                className="sm:w-28 px-3 py-2 text-sm border rounded-md focus:outline-none focus:ring-1 focus:ring-brand-blue"
+                className="w-full sm:w-28 px-3 py-2 text-sm border rounded-md focus:outline-none focus:ring-1 focus:ring-brand-blue"
                 value={newExpenseAmount}
                 onChange={(e) => setNewExpenseAmount(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
             />
             <button 
                 onClick={handleAdd}
-                className="p-2 bg-brand-slate text-white rounded-md hover:bg-slate-700 transition-colors flex-shrink-0"
+                className="p-2 bg-brand-slate text-white rounded-md hover:bg-slate-700 transition-colors flex-shrink-0 flex items-center justify-center"
                 aria-label="Add Expense"
             >
                 <Plus className="w-5 h-5" />
@@ -124,6 +135,7 @@ const UpfrontExpenses: React.FC<Props> = ({ expenses, setExpenses, downPaymentAm
             <thead className="text-xs text-slate-500 bg-slate-50 uppercase">
                 <tr>
                     <th className="px-2 sm:px-4 py-2">项目</th>
+                    <th className="px-2 sm:px-4 py-2">日期</th>
                     <th className="px-2 sm:px-4 py-2 text-right">成本 (AED)</th>
                     <th className="px-2 sm:px-4 py-2 w-8"></th>
                 </tr>
@@ -133,11 +145,13 @@ const UpfrontExpenses: React.FC<Props> = ({ expenses, setExpenses, downPaymentAm
                   <>
                     <tr className="bg-slate-50/70">
                         <td className="px-2 sm:px-4 py-3 font-medium text-slate-700 flex items-center gap-2"><Wallet className="w-4 h-4 text-slate-400"/>房产首付</td>
+                        <td className="px-2 sm:px-4 py-3 text-slate-500">--</td>
                         <td className="px-2 sm:px-4 py-3 text-right text-slate-700">{downPaymentAmount.toLocaleString()}</td>
                         <td></td>
                     </tr>
                     <tr className="bg-slate-50/70">
                         <td className="px-2 sm:px-4 py-3 font-medium text-slate-700 flex items-center gap-2"><FileText className="w-4 h-4 text-slate-400"/>土地局注册费</td>
+                         <td className="px-2 sm:px-4 py-3 text-slate-500">--</td>
                         <td className="px-2 sm:px-4 py-3 text-right text-slate-700">{landDepartmentFeeAmount.toLocaleString()}</td>
                         <td></td>
                     </tr>
@@ -146,6 +160,7 @@ const UpfrontExpenses: React.FC<Props> = ({ expenses, setExpenses, downPaymentAm
                 {filteredExpenses.map((ex) => (
                     <tr key={ex.id} className="group hover:bg-slate-50 transition-colors">
                         <td className="px-2 sm:px-4 py-3 font-medium text-slate-700">{ex.name}</td>
+                        <td className="px-2 sm:px-4 py-3 text-slate-600">{ex.date}</td>
                         <td className="px-2 sm:px-4 py-3 text-right text-slate-700">{ex.amount.toLocaleString()}</td>
                         <td className="px-2 sm:px-4 py-3 text-right">
                             <button onClick={() => handleRemove(ex.id)} className="text-slate-400 hover:text-red-500 opacity-0 group-hover:opacity-100 md:opacity-100 transition-opacity">

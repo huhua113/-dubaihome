@@ -18,6 +18,7 @@ export interface OneTimeExpense {
   name: string;
   amount: number;
   category: 'pre' | 'post'; // Pre-purchase or Post-purchase
+  date: string; // YYYY-MM-DD format
 }
 
 export interface MonthlyData {

@@ -13,6 +13,10 @@ type MainView = 'dashboard' | 'upfront' | 'recurring';
 type ChartRange = 'monthly' | 'yearly' | '5y' | '10y' | '25y';
 
 const createNewProperty = (name: string): Omit<Property, 'id'> => {
+    const defaultDate = new Date();
+    defaultDate.setFullYear(2025, 7, 15); // Aug 15, 2025
+    const dateString = defaultDate.toISOString().split('T')[0];
+
     return {
         name: name,
         settings: {
@@ -30,18 +34,18 @@ const createNewProperty = (name: string): Omit<Property, 'id'> => {
             floatingRatePercent: 5.5,
         },
         oneTimeExpenses: [
-            { id: '1', name: '中介费', amount: 25000, category: 'pre' },
-            { id: '2', name: '首次评估费用', amount: 2625, category: 'pre' },
-            { id: '3', name: '第二次评估费用', amount: 3100, category: 'pre' },
-            { id: '4', name: '房产保险', amount: 630, category: 'pre' },
-            { id: '5', name: '银行手续费', amount: 3150, category: 'pre' },
-            { id: '6', name: 'FOL', amount: 1050, category: 'pre' },
-            { id: '7', name: '服务费税费', amount: 1250, category: 'pre' },
-            { id: '8', name: '过户中心手续费', amount: 4200, category: 'pre' },
-            { id: '9', name: '产证费', amount: 580, category: 'pre' },
-            { id: '10', name: '房屋粉刷维修', amount: 1560, category: 'post' },
-            { id: '11', name: '空调维修', amount: 3699, category: 'post' },
-            { id: '12', name: '保洁', amount: 400, category: 'post' },
+            { id: '1', name: '中介费', amount: 25000, category: 'pre', date: dateString },
+            { id: '2', name: '首次评估费用', amount: 2625, category: 'pre', date: dateString },
+            { id: '3', name: '第二次评估费用', amount: 3100, category: 'pre', date: dateString },
+            { id: '4', name: '房产保险', amount: 630, category: 'pre', date: dateString },
+            { id: '5', name: '银行手续费', amount: 3150, category: 'pre', date: dateString },
+            { id: '6', name: 'FOL', amount: 1050, category: 'pre', date: dateString },
+            { id: '7', name: '服务费税费', amount: 1250, category: 'pre', date: dateString },
+            { id: '8', name: '过户中心手续费', amount: 4200, category: 'pre', date: dateString },
+            { id: '9', name: '产证费', amount: 580, category: 'pre', date: dateString },
+            { id: '10', name: '房屋粉刷维修', amount: 1560, category: 'post', date: dateString },
+            { id: '11', name: '空调维修', amount: 3699, category: 'post', date: dateString },
+            { id: '12', name: '保洁', amount: 400, category: 'post', date: dateString },
         ],
         monthlyInputs: {
             1: { dewa: 2130, ac: 2423.38, serviceFees: 1146, loanPayment: 5552.65 },

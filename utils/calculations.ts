@@ -7,10 +7,27 @@ export const calculateSimulation = (
 ): { results: MonthlyData[]; totals: { upfront: number; recurring: number; income: number; net: number; totalLoanPayments: number } } => {
   
   const results: MonthlyData[] = [];
+  const fixedStartDate = new Date(2025, 7, 1); // August is month 7 (0-indexed)
 
+  // Pre-process expenses to map them to month indices for efficiency
+  const expensesByMonth: Record<number, number> = {};
+  if (expenses) {
+      expenses.forEach(expense => {
+          if (!expense.date) return; // Skip if date is missing
+          const expenseDate = new Date(expense.date);
+          if (isNaN(expenseDate.getTime())) return; // Skip if date is invalid
+
+          const monthDiff = (expenseDate.getFullYear() - fixedStartDate.getFullYear()) * 12 + (expenseDate.getMonth() - fixedStartDate.getMonth());
+          
+          if (monthDiff >= 0 && monthDiff < settings.loanTenorMonths) {
+              expensesByMonth[monthDiff] = (expensesByMonth[monthDiff] || 0) + expense.amount;
+          }
+      });
+  }
+
+  // Add Land Department fee to the first month (month 0)
   const landDepartmentFeeAmount = settings.propertyValue * (settings.landDepartmentFeePercent / 100);
-  const oneTimeCostsFromExpenseArray = expenses.reduce((sum, item) => sum + item.amount, 0);
-  const totalOneTimeCosts = landDepartmentFeeAmount + oneTimeCostsFromExpenseArray;
+  expensesByMonth[0] = (expensesByMonth[0] || 0) + landDepartmentFeeAmount;
   
   for (let i = 0; i < settings.loanTenorMonths; i++) {
     const inputs = monthlyInputs[i] || {};
@@ -21,6 +38,7 @@ export const calculateSimulation = (
     const other = inputs.otherMaintenance || 0;
     const rental = inputs.rentalIncome || 0;
     const loanPayment = inputs.loanPayment || 0;
+    const monthlyOneTimeCost = expensesByMonth[i] || 0;
 
     results.push({
       monthIndex: i,
@@ -30,14 +48,15 @@ export const calculateSimulation = (
       otherMaintenance: other,
       rentalIncome: rental,
       loanPayment: loanPayment,
-      oneTimeExpenses: i === 0 ? totalOneTimeCosts : 0,
+      oneTimeExpenses: monthlyOneTimeCost,
     });
   }
 
   const downPayment = settings.propertyValue * (settings.downPaymentPercent / 100);
-  
+  const oneTimeCostsFromExpenseArray = expenses?.reduce((sum, item) => sum + item.amount, 0) || 0;
+
   // Sum up upfront costs (for totals card, includes everything)
-  const totalUpfront = expenses.reduce((sum, item) => sum + item.amount, 0) + downPayment + landDepartmentFeeAmount;
+  const totalUpfront = oneTimeCostsFromExpenseArray + downPayment + landDepartmentFeeAmount;
   
   let totalRecurring = 0;
   let totalIncome = 0;

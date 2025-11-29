@@ -154,11 +154,11 @@ const MonthlyExpenses: React.FC<Props> = ({ monthlyInputs, setMonthlyInputs, tot
   }, [monthsToDisplay, monthlyInputs]);
 
   const getTabLabel = (t: TabType) => ({
-    'payment': '每月还款',
-    'income': '租金收入',
-    'service': '物业费',
-    'dewa': '水电费',
-    'ac': '空调费',
+    'payment': '还款',
+    'income': '收入',
+    'service': '物业',
+    'dewa': 'DEWA',
+    'ac': '空调',
   }[t]);
 
   const getTabIcon = (t: TabType) => ({
@@ -220,7 +220,7 @@ const MonthlyExpenses: React.FC<Props> = ({ monthlyInputs, setMonthlyInputs, tot
                   <button
                       key={tab}
                       onClick={() => setActiveTab(tab)}
-                      className={`flex-1 flex items-center justify-center gap-2 px-2 py-3 text-sm font-medium text-center transition-colors min-w-max
+                      className={`flex-1 flex items-center justify-center gap-2 px-3 py-3 text-sm font-medium text-center transition-colors min-w-max
                           ${activeTab === tab 
                               ? (tab === 'income' ? 'text-green-600 border-b-2 border-green-600 bg-green-50/50' : 'text-brand-blue border-b-2 border-brand-blue bg-blue-50/50') 
                               : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
