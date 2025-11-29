@@ -82,8 +82,8 @@ const Dashboard: React.FC = () => {
 
   const activeProperty = useMemo(() => properties.find(p => p.id === activePropertyId), [properties, activePropertyId]);
   
-  const [estimatedSalePrice, setEstimatedSalePrice] = useState('0');
-  const [monthsHeld, setMonthsHeld] = useState('60');
+  const [estimatedSalePrice, setEstimatedSalePrice] = useState('');
+  const [monthsHeld, setMonthsHeld] = useState('');
 
   // Firestore real-time listener
   useEffect(() => {
@@ -256,10 +256,19 @@ const Dashboard: React.FC = () => {
             }
         }
         
+        const chartStartDate = new Date(2025, 7, 1); // August 2025
         let name = '';
-        if (chartRange === 'monthly') name = `M${i+1}`;
-        else if (chartRange === 'yearly') name = `Y${(i/12)+1}`;
-        else name = `Y${Math.floor(i / 12) + 1}`;
+        const currentPeriodDate = new Date(chartStartDate);
+        currentPeriodDate.setMonth(currentPeriodDate.getMonth() + i);
+        const year = currentPeriodDate.getFullYear();
+        const shortYear = String(year).slice(-2);
+
+        if (chartRange === 'monthly') {
+            const month = currentPeriodDate.getMonth() + 1;
+            name = `${shortYear}/${String(month).padStart(2, '0')}`;
+        } else {
+            name = `'${shortYear}`;
+        }
 
         aggregatedData.push({ name, income: periodIncome, expense: periodExpense });
     }

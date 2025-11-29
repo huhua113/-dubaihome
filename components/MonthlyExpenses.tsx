@@ -328,7 +328,8 @@ const MonthlyExpenses: React.FC<Props> = ({ monthlyInputs, setMonthlyInputs, tot
                               <td className="px-2 sm:px-4 py-2 text-slate-700 font-medium text-left">{getDateLabel(i)}</td>
                               <td className="px-2 sm:px-4 py-2 text-left">
                                   <input 
-                                      type="number"
+                                      type="text"
+                                      inputMode="decimal"
                                       step="1"
                                       placeholder="0"
                                       className={`w-full text-left bg-transparent border-b border-transparent focus:border-brand-gold focus:outline-none focus:bg-white px-2 py-1 rounded
