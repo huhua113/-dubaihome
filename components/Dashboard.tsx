@@ -226,16 +226,11 @@ const Dashboard: React.FC = () => {
 
         results.forEach((m, idx) => {
             if (detailedPortfolioResults[idx]) {
-                // FIX: Cast to Number to prevent type errors with arithmetic operations on `string | number` types.
                 detailedPortfolioResults[idx].dewa = Number(detailedPortfolioResults[idx].dewa) + Number(m.dewa);
-                // FIX: Cast to Number to prevent type errors with arithmetic operations on `string | number` types.
                 detailedPortfolioResults[idx].ac = Number(detailedPortfolioResults[idx].ac) + Number(m.ac);
-                // FIX: Cast to Number to prevent type errors with arithmetic operations on `string | number` types.
                 detailedPortfolioResults[idx].serviceFees = Number(detailedPortfolioResults[idx].serviceFees) + Number(m.serviceFees);
                 detailedPortfolioResults[idx].otherMaintenance += m.otherMaintenance;
-                // FIX: Cast to Number to prevent type errors with arithmetic operations on `string | number` types.
                 detailedPortfolioResults[idx].rentalIncome = Number(detailedPortfolioResults[idx].rentalIncome) + Number(m.rentalIncome);
-                // FIX: Cast to Number to prevent type errors with arithmetic operations on `string | number` types.
                 detailedPortfolioResults[idx].loanPayment = Number(detailedPortfolioResults[idx].loanPayment) + Number(m.loanPayment);
                 detailedPortfolioResults[idx].oneTimeExpenses += m.oneTimeExpenses;
             }
@@ -243,45 +238,67 @@ const Dashboard: React.FC = () => {
     });
 
     const combinedMonthlyResultsForChart = detailedPortfolioResults.map(m => ({
-        // FIX: Cast to Number to ensure `income` is a number for chart data.
         income: Number(m.rentalIncome),
-        // FIX: Cast to Number to prevent type errors with arithmetic operations on `string | number` types.
         expense: Number(m.loanPayment) + Number(m.dewa) + Number(m.ac) + Number(m.serviceFees) + m.otherMaintenance + m.oneTimeExpenses,
     }));
 
     let aggregatedData = [];
-    const periodMonths = {'monthly': 1, 'yearly': 12, '5y': 60, '10y': 120, '25y': 300}[chartRange];
+    const chartStartDate = new Date(2025, 7, 1); // August 2025
 
-    for (let i = 0; i < maxTenor; i += periodMonths) {
-        let periodIncome = 0;
-        let periodExpense = 0;
+    if (chartRange === 'yearly') {
+        const yearlyTotals: Record<string, { income: number, expense: number }> = {};
         
-        for (let j = i; j < i + periodMonths && j < maxTenor; j++) {
-            if (combinedMonthlyResultsForChart[j]) {
-                periodIncome += combinedMonthlyResultsForChart[j].income;
-                periodExpense += combinedMonthlyResultsForChart[j].expense;
+        combinedMonthlyResultsForChart.forEach((monthData, index) => {
+            const currentPeriodDate = new Date(chartStartDate);
+            currentPeriodDate.setMonth(currentPeriodDate.getMonth() + index);
+            const year = currentPeriodDate.getFullYear().toString();
+
+            if (!yearlyTotals[year]) {
+                yearlyTotals[year] = { income: 0, expense: 0 };
             }
+
+            yearlyTotals[year].income += monthData.income;
+            yearlyTotals[year].expense += monthData.expense;
+        });
+
+        aggregatedData = Object.keys(yearlyTotals).sort().map(year => ({
+            name: `'${year.slice(-2)}`,
+            income: yearlyTotals[year].income,
+            expense: yearlyTotals[year].expense,
+        }));
+    } else {
+        const periodMonths = {'monthly': 1, '5y': 60, '10y': 120, '25y': 300}[chartRange as 'monthly' | '5y' | '10y' | '25y'];
+
+        for (let i = 0; i < maxTenor; i += periodMonths) {
+            let periodIncome = 0;
+            let periodExpense = 0;
+            
+            for (let j = i; j < i + periodMonths && j < maxTenor; j++) {
+                if (combinedMonthlyResultsForChart[j]) {
+                    periodIncome += combinedMonthlyResultsForChart[j].income;
+                    periodExpense += combinedMonthlyResultsForChart[j].expense;
+                }
+            }
+            
+            let name = '';
+            const currentPeriodDate = new Date(chartStartDate);
+            currentPeriodDate.setMonth(currentPeriodDate.getMonth() + i);
+            const year = currentPeriodDate.getFullYear();
+            const shortYear = String(year).slice(-2);
+
+            if (chartRange === 'monthly') {
+                const month = currentPeriodDate.getMonth() + 1;
+                name = `${shortYear}/${String(month).padStart(2, '0')}`;
+            } else {
+                name = `'${shortYear}`;
+            }
+
+            aggregatedData.push({ name, income: periodIncome, expense: periodExpense });
         }
         
-        const chartStartDate = new Date(2025, 7, 1); // August 2025
-        let name = '';
-        const currentPeriodDate = new Date(chartStartDate);
-        currentPeriodDate.setMonth(currentPeriodDate.getMonth() + i);
-        const year = currentPeriodDate.getFullYear();
-        const shortYear = String(year).slice(-2);
-
         if (chartRange === 'monthly') {
-            const month = currentPeriodDate.getMonth() + 1;
-            name = `${shortYear}/${String(month).padStart(2, '0')}`;
-        } else {
-            name = `'${shortYear}`;
+            aggregatedData = aggregatedData.slice(0, 60);
         }
-
-        aggregatedData.push({ name, income: periodIncome, expense: periodExpense });
-    }
-    
-    if (chartRange === 'monthly') {
-        aggregatedData = aggregatedData.slice(0, 60);
     }
     
     const calculatedTotalExpense = portfolioTotals.recurring + portfolioTotals.upfront;
@@ -318,9 +335,7 @@ const Dashboard: React.FC = () => {
     const fixedStartDate = new Date(2025, 7, 1); // August is month 7 (0-indexed)
 
     detailedPortfolioResults.forEach((month, index) => {
-      // FIX: Cast to Number to ensure `income` is a number for calculation.
       const income = Number(month.rentalIncome);
-      // FIX: Cast to Number to prevent type errors with arithmetic operations on `string | number` types.
       const expense = Number(month.loanPayment) + Number(month.dewa) + Number(month.ac) + Number(month.serviceFees) + month.otherMaintenance + month.oneTimeExpenses;
       const monthlyNet = income - expense;
       cumulativeNet += monthlyNet;
