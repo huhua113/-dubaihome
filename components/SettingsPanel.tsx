@@ -67,6 +67,7 @@ const SettingsPanel: React.FC<Props> = ({
                         className="w-full pl-3 pr-3 py-2 border rounded-md focus:ring-2 focus:ring-brand-gold focus:outline-none"
                         value={settings.areaSqm}
                         onChange={(e) => handleChange('areaSqm', e.target.value)}
+                        onWheel={(e) => (e.target as HTMLElement).blur()}
                     />
                 </div>
                  <div>
@@ -76,6 +77,7 @@ const SettingsPanel: React.FC<Props> = ({
                         className="w-full pl-3 pr-3 py-2 border rounded-md focus:ring-2 focus:ring-brand-gold focus:outline-none"
                         value={settings.bedrooms}
                         onChange={(e) => handleChange('bedrooms', e.target.value)}
+                        onWheel={(e) => (e.target as HTMLElement).blur()}
                     />
                 </div>
             </div>
@@ -86,6 +88,7 @@ const SettingsPanel: React.FC<Props> = ({
                   className="w-full pl-3 pr-3 py-2 border rounded-md focus:ring-2 focus:ring-brand-gold focus:outline-none"
                   value={settings.propertyValue}
                   onChange={(e) => handleChange('propertyValue', e.target.value)}
+                  onWheel={(e) => (e.target as HTMLElement).blur()}
                 />
             </div>
             <div className="grid grid-cols-2 gap-2">
@@ -97,6 +100,7 @@ const SettingsPanel: React.FC<Props> = ({
                     className="w-full pl-3 pr-8 py-2 border rounded-md focus:ring-2 focus:ring-brand-gold focus:outline-none"
                     value={settings.downPaymentPercent}
                     onChange={(e) => handleChange('downPaymentPercent', e.target.value)}
+                    onWheel={(e) => (e.target as HTMLElement).blur()}
                   />
                   <Percent className="w-3 h-3 absolute right-3 text-gray-400" />
                 </div>
@@ -116,6 +120,7 @@ const SettingsPanel: React.FC<Props> = ({
                     className="w-full pl-3 pr-8 py-2 border rounded-md focus:ring-2 focus:ring-brand-gold focus:outline-none"
                     value={settings.landDepartmentFeePercent}
                     onChange={(e) => handleChange('landDepartmentFeePercent', e.target.value)}
+                    onWheel={(e) => (e.target as HTMLElement).blur()}
                     />
                     <Percent className="w-3 h-3 absolute right-3 text-gray-400" />
                 </div>
@@ -142,6 +147,7 @@ const SettingsPanel: React.FC<Props> = ({
                         className="w-full pl-3 pr-3 py-2 border rounded-md focus:ring-2 focus:ring-brand-gold focus:outline-none"
                         value={settings.loanTenorMonths}
                         onChange={(e) => handleChange('loanTenorMonths', e.target.value)}
+                        onWheel={(e) => (e.target as HTMLElement).blur()}
                     />
                 </div>
                  <div className="flex items-end pb-2 text-xs text-gray-400">
@@ -166,6 +172,7 @@ const SettingsPanel: React.FC<Props> = ({
                             className="w-full pl-3 pr-8 py-2 border rounded-md focus:ring-2 focus:ring-brand-gold focus:outline-none"
                             value={settings.fixedRatePercent}
                             onChange={(e) => handleChange('fixedRatePercent', e.target.value)}
+                            onWheel={(e) => (e.target as HTMLElement).blur()}
                         />
                         <Percent className="w-3 h-3 absolute right-3 text-gray-400" />
                     </div>
@@ -177,6 +184,7 @@ const SettingsPanel: React.FC<Props> = ({
                         className="w-full pl-3 pr-3 py-2 border rounded-md focus:ring-2 focus:ring-brand-gold focus:outline-none"
                         value={settings.fixedRateMonths}
                         onChange={(e) => handleChange('fixedRateMonths', e.target.value)}
+                        onWheel={(e) => (e.target as HTMLElement).blur()}
                     />
                 </div>
             </div>
@@ -190,6 +198,7 @@ const SettingsPanel: React.FC<Props> = ({
                             className="w-full pl-3 pr-8 py-2 border rounded-md focus:ring-2 focus:ring-brand-gold focus:outline-none"
                             value={settings.floatingRatePercent}
                             onChange={(e) => handleChange('floatingRatePercent', e.target.value)}
+                            onWheel={(e) => (e.target as HTMLElement).blur()}
                         />
                         <Percent className="w-3 h-3 absolute right-3 text-gray-400" />
                     </div>
@@ -202,6 +211,7 @@ const SettingsPanel: React.FC<Props> = ({
                             className="w-full pl-3 pr-8 py-2 border rounded-md focus:ring-2 focus:ring-brand-gold focus:outline-none"
                             value={settings.insurancePercent}
                             onChange={(e) => handleChange('insurancePercent', e.target.value)}
+                            onWheel={(e) => (e.target as HTMLElement).blur()}
                         />
                         <Percent className="w-3 h-3 absolute right-3 text-gray-400" />
                     </div>

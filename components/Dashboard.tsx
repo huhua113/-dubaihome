@@ -482,6 +482,7 @@ const Dashboard: React.FC = () => {
                         className="w-full pl-3 pr-3 py-2 border rounded-md focus:ring-2 focus:ring-brand-gold focus:outline-none"
                         value={estimatedSalePrice}
                         onChange={(e) => setEstimatedSalePrice(e.target.value)}
+                        onWheel={(e) => (e.target as HTMLElement).blur()}
                     />
                 </div>
                 <div>
@@ -491,6 +492,7 @@ const Dashboard: React.FC = () => {
                         className="w-full pl-3 pr-3 py-2 border rounded-md focus:ring-2 focus:ring-brand-gold focus:outline-none"
                         value={monthsHeld}
                         onChange={(e) => setMonthsHeld(e.target.value)}
+                        onWheel={(e) => (e.target as HTMLElement).blur()}
                     />
                 </div>
             </div>

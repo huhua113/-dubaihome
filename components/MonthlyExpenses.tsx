@@ -112,7 +112,14 @@ const BulkEditModal: React.FC<{
                     </div>
                     <div>
                         <label className="text-xs font-semibold text-slate-500 uppercase">金额 (AED)</label>
-                        <input type="number" placeholder="输入月度金额" value={value} onChange={e => setValue(e.target.value)} className="w-full border rounded-md px-3 py-2 text-sm focus:ring-1 focus:ring-brand-gold focus:outline-none mt-1" />
+                        <input 
+                            type="number" 
+                            placeholder="输入月度金额" 
+                            value={value} 
+                            onChange={e => setValue(e.target.value)} 
+                            className="w-full border rounded-md px-3 py-2 text-sm focus:ring-1 focus:ring-brand-gold focus:outline-none mt-1" 
+                            onWheel={(e) => (e.target as HTMLElement).blur()}
+                        />
                     </div>
                 </div>
                 <div className="mt-6 flex justify-end gap-3">
@@ -328,9 +335,8 @@ const MonthlyExpenses: React.FC<Props> = ({ monthlyInputs, setMonthlyInputs, tot
                               <td className="px-2 sm:px-4 py-2 text-slate-700 font-medium text-left">{getDateLabel(i)}</td>
                               <td className="px-2 sm:px-4 py-2 text-left">
                                   <input 
-                                      type="text"
+                                      type="tel"
                                       inputMode="decimal"
-                                      step="1"
                                       placeholder="0"
                                       className={`w-full text-left bg-transparent border-b border-transparent focus:border-brand-gold focus:outline-none focus:bg-white px-2 py-1 rounded
                                           ${activeTab === 'income' ? 'text-green-600' : 'text-brand-slate-dark'}

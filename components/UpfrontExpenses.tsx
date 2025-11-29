@@ -118,6 +118,7 @@ const UpfrontExpenses: React.FC<Props> = ({ expenses = [], setExpenses, downPaym
                 value={newExpenseAmount}
                 onChange={(e) => setNewExpenseAmount(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
+                onWheel={(e) => (e.target as HTMLElement).blur()}
             />
             <button 
                 onClick={handleAdd}
